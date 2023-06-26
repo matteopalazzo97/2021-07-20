@@ -5,9 +5,12 @@
 package it.polito.tdp.yelp;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.yelp.model.Model;
+import it.polito.tdp.yelp.model.User;
+import it.polito.tdp.yelp.model.UtenteSim;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,13 +41,13 @@ public class FXMLController {
     private TextField txtX2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbAnno"
-    private ComboBox<?> cmbAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbUtente"
-    private ComboBox<?> cmbUtente; // Value injected by FXMLLoader
+    private ComboBox<User> cmbUtente; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtX1"
     private TextField txtX1; // Value injected by FXMLLoader
@@ -54,11 +57,57 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	int n = 0;
+    	
+    	this.txtResult.clear();
+
+    	if(this.cmbAnno.getValue() == null) {
+    		this.txtResult.setText("Seleziona un valore dalla tendina.");
+    	}
+
+    	if(this.txtN.getText().equals("")) {
+    		this.txtResult.setText("Inserire un valore per n.");
+    		return;
+    	}
+
+    	try {
+    		n = Integer.parseInt(this.txtN.getText());
+    		this.model.creaGrafo(n, this.cmbAnno.getValue());
+
+    		this.txtResult.setText("Grafo creato.\n");
+    		this.txtResult.appendText("# vertici: " + this.model.getNumVertici() + "\n");
+    		this.txtResult.appendText("# archi:   " + this.model.getNumArchi() + "\n");
+
+    		this.cmbUtente.getItems().addAll(this.model.getVertici(n));
+
+
+
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Inserire un valore numerico per n.");
+    		return;
+    	}
+    	
+    	
 
     }
 
     @FXML
     void doUtenteSimile(ActionEvent event) {
+    	
+    	this.txtResult.clear();
+
+    	if(this.cmbUtente.getValue() == null) {
+    		this.txtResult.setText("Seleziona un valore dalla tendina.");
+    	} else {
+    		List<UtenteSim> simili =this.model.utentiSim(this.cmbUtente.getValue());
+    		
+    		this.txtResult.setText("Utenti simili a " + this.cmbUtente.getValue().toString() + ":\n");
+    		
+    		for(UtenteSim u: simili) {
+    			this.txtResult.appendText(u.toString() + "\n");
+    		}
+    	}
 
     }
     
@@ -84,5 +133,10 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	
+    	for(int i=2005; i<2014; i++) {
+    		this.cmbAnno.getItems().add(i);
+    	}
+    	
     }
 }
