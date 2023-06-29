@@ -5,3 +5,5 @@ public class Main {
         EntryPoint.main(args);
     }
 }
+//grafo semplice non orientato e pesato
+//lista nodi di grado uguale a un nodo dato
